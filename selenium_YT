@@ -1,0 +1,25 @@
+# Need to install Chrome WebDriver : "https://chromedriver.chromium.org/"
+import time
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.keys import Keys
+
+
+
+path_to_extension_ytad = r'C:/Users/eyulf_cheng/Desktop/1.1.1_0'       # 擴充功能檔案YT_adblock位置設定
+chrome_options = Options()
+
+chrome_options.add_argument('load-extension=' + path_to_extension_ytad)# 載入YT_adblock
+driver = webdriver.Chrome(chrome_options=chrome_options)               # 打開擴充功能
+driver.create_options()
+
+driver.get("http://www.google.com")                                    # 隨便開一個網頁
+
+handles = driver.window_handles                                        # 獲取當前瀏覽器打開的所有分頁
+print(len(handles))                 
+driver.switch_to.window(handles[1])                                    # driver控制第二個分頁
+time.sleep(3)             
+driver.close()                                                         # 關閉driver控制的分頁
+driver.switch_to.window(handles[0])                                    # driver控制第一個分頁
+driver.get('https://www.youtube.com/watch?v=WjoplqS1u18')
+driver.find_element_by_class_name('ytp-large-play-button').click()     # 點擊播放
