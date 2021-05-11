@@ -75,8 +75,7 @@ def Connect(wifi_ssid_name, wifi_password):
         print("Connecting")
     else :
         print("Unknown")
-
-if __name__ == "__main__":
+def switch():
     #Scan()
     count=0;
     while True:
@@ -92,3 +91,7 @@ if __name__ == "__main__":
         print("Trying to connect 5G")
         Connect(SSID_5G_NAME, SSID_5G_PASSWORD)
         time.sleep(WAIT_TIME)
+    
+
+if __name__ == "__main__":
+    switch()
