@@ -1,0 +1,52 @@
+#"raspberry pi need to :
+# sudo apt-get install python-dev libatlas-base-dev
+import os
+import pandas as pd
+from datetime import datetime
+
+
+# print all pandas 
+pd.set_option('display.max_columns', None)
+pd.set_option('display.max_rows', None)
+
+items = os.listdir(".")
+df = pd.DataFrame()
+filelist = []
+for file in items:
+    if file.endswith(".csv"):                       # 抓出所有csv檔
+        # print(file)
+        data = pd.read_csv(file,encoding='Big5')    # 用Big5打開
+        filelist.append(data)
+        df = df.append(data)                        # 把所有資料放進同一個pandas裡面
+        # os.remove(file)
+df.reset_index(inplace = True, drop=True)           # 整理index
+
+#test items successful rate, start date, end date, duration time, total test time
+
+connect = df[' stutus_result   '].value_counts()
+content_CWSR = ' Connect  Wifi Successed Rate : ' + str(round(connect['Successed ']/len(df),2))
+
+YT = df[' play youtube'].value_counts() 
+content_YTSR ='\n Play YouTube Successed Rate : ' + str(round(YT['Played ']/len(df),2))
+
+content_iperf3 = ''
+for data in df.columns.tolist()[-4::1]:    
+    content_iperf3 += '\n' + data + ' : ' + str(round(df[data].mean(),2))
+
+start = datetime.strptime(str(df[' date'][1]        ).split()[0] + str(df[' time'][1]        ).split()[0], "%Y-%m-%d%H:%M:%S")
+end   = datetime.strptime(str(df[' date'][len(df)-1]).split()[0] + str(df[' time'][len(df)-1]).split()[0], "%Y-%m-%d%H:%M:%S")
+content_duration = '\nDuration :' + str(end - start)
+
+start_date = str(df[' date'][1])
+end_date   = str(df[' date'][len(df)-1])
+content_datetime = '\nStart : ' + start_date + str(df[' time'][1]) + '\nEnd   : ' + end_date + str(df[' time'][len(df)-1]) 
+
+content_times = '\nTotal Test Times : ' + df[' times'][len(df)-1]
+content = content_CWSR + content_YTSR + content_iperf3 + content_datetime + content_duration + content_times
+
+
+fn = start_date + '~' + end_date + 'result.txt'
+with open(fn, 'w') as file_Obj:
+    work = file_Obj.write(content)
+
+df.to_csv('test')
